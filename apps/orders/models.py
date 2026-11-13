@@ -1,119 +1,112 @@
-import { useState, useEffect } from 'react';
-import Header from './components/header';
-import CarteProduit from './components/carteProduit';
-import PanneauPanier from './components/cartePanier';
+from django.db import models
+from django.conf import settings
+from apps.products.models import ProduitInformatique
 
-function App() {
-    const [produits, setProduits] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [panier, setPanier] = useState([]);
-    const [isPanierOpen, setIsPanierOpen] = useState(false);
-    const [isCommandeEnCours, setIsCommandeEnCours] = useState(false);
+class Panier(models.Model):
+    """
+    Modèle représentant le panier d'un utilisateur.
+    Un utilisateur peut avoir plusieurs produits dans son panier.
+    """
+    client = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='panier'
+    )
+    produit = models.ForeignKey( 
+        ProduitInformatique,     
+        on_delete=models.CASCADE,
+        related_name='panier_items'
+    )
+    quantite = models.PositiveIntegerField(default=1)
+    date_ajout = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        unique_together = ('client', 'produit')  
+        ordering = ['-date_ajout']
 
-    useEffect(() => {
-        fetch('http://127.0.0.1:8000/api/v1/produits/')
-         .then(response => response.json())
-         .then(data => {
-            setProduits(data.results); 
-            setLoading(false);
-         })
-         .catch(error => {
-            console.error("Erreur :", error);
-            setLoading(false);
-         });
-    }, []);
+    def __str__(self):
+        return f"{self.client.username} - {self.produit.nom} x{self.quantite}"
 
-    const ajouterAuPanier = (produit) => {
-        const existeDeja = panier.find(item => item.id === produit.id);
-        if (existeDeja) {
-            setPanier(panier.map(item => 
-                item.id === produit.id ? { ...item, quantite: item.quantite + 1 } : item
-            ));
-        } else {
-            setPanier([...panier, { ...produit, quantite: 1 }]);
-        }
-    };
+    @property
+    def sous_total(self):
+        """Calcule le sous-total pour cet article du panier."""
+        return self.quantite * self.produit.prix
 
-    const supprimerDuPanier = (id) => {
-        setPanier(panier.filter(item => item.id !== id));
-    };
 
-    const passerCommande = async () => {
-        setIsCommandeEnCours(true);
-        
-        const commandeData = {
-            panier: panier.map(item => ({ id: item.id, quantite: item.quantite }))
-        };
+class Commande(models.Model):
+    """
+    Modèle représentant une commande finalisée.
+    """
+    STATUS_CHOICES = [
+        ('en_attente', 'En attente de paiement'),
+        ('confirmee', 'Confirmée'),
+        ('expediee', 'Expédiée'),
+        ('livree', 'Livrée'),
+        ('annulee', 'Annulée'),
+    ]
+    
+    client = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='commandes'
+    )
+    date_commande = models.DateTimeField(auto_now_add=True)
+    total = models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='en_attente'
+    )
+    transaction_id = models.CharField(
+        max_length=100,
+        blank=True,
+        null=True,
+        help_text="ID de la transaction PayPal ou Stripe"
+    )
+    adresse_livraison = models.TextField()
+    
+    # Date de livraison estimée (calculée automatiquement plus tard)
+    date_livraison_estimee = models.DateField(null=True, blank=True)
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
-        try {
-            const response = await fetch('http://127.0.0.1:8000/api/v1/commandes/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                credentials: 'include',
-                body: JSON.stringify(commandeData)
-            });
+    class Meta:
+        ordering = ['-date_commande']
 
-            const data = await response.json();
+    def __str__(self):
+        return f"Commande #{self.id} - {self.client.username}"
 
-            if (response.ok) {
-                alert("🎉 Commande réussie ! Merci pour votre achat.");
-                setPanier([]);
-                setIsPanierOpen(false);
-            } else {
-                alert(`Erreur : ${data.error || 'Problème lors de la commande'}`);
-            }
-        } catch (error) {
-            console.error("Erreur réseau :", error);
-            alert("Impossible de contacter le serveur.");
-        } finally {
-            setIsCommandeEnCours(false);
-        }
-    };
+    @property
+    def est_payee(self):
+        """Vérifie si la commande a été payée."""
+        return self.status not in ['en_attente', 'annulee']
 
-    const totalArticles = panier.reduce((total, item) => total + item.quantite, 0);
 
-    if (loading) {
-        return <div className="text-center mt-20 text-2xl font-bold">Chargement des produits... ⏳</div>;
-    }
+class DetailCommande(models.Model):
+    """
+    Modèle représentant les détails d'une commande.
+    Chaque commande peut avoir plusieurs produits.
+    """
+    commande = models.ForeignKey(
+        Commande,
+        on_delete=models.CASCADE,
+        related_name='details'
+    )
+    produit = models.ForeignKey(
+        ProduitInformatique, 
+        null=True, 
+        blank=True, 
+        on_delete=models.CASCADE, 
+        related_name='details_commandes'
+    )
+    quantite = models.PositiveIntegerField()
+    prix_unitaire = models.DecimalField(max_digits=10, decimal_places=2)
 
-    return (
-        <div className="min-h-screen bg-gray-50">
-            <Header 
-                totalArticles={totalArticles} 
-                onOuvrirPanier={() => setIsPanierOpen(true)} 
-            />
+    def __str__(self):
+        return f"{self.commande.id} - {self.produit.nom} x{self.quantite}"
 
-            <main className="container mx-auto p-8">
-                <h2 className="text-3xl font-semibold mb-8 text-gray-800">Nos Produits High-Tech</h2>
-                
-                {produits.length === 0 ? (
-                    <p className="text-gray-500">Aucun produit trouvé.</p>
-                ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {produits.map(produit => (
-                            <CarteProduit 
-                                key={produit.id} 
-                                produit={produit} 
-                                onAjouter={ajouterAuPanier} 
-                            />
-                        ))}
-                    </div>
-                )}
-            </main>
-
-            {isPanierOpen && (
-                <PanneauPanier 
-                    panier={panier} 
-                    onFermer={() => setIsPanierOpen(false)}
-                    onSupprimer={supprimerDuPanier}
-                    onCommander={passerCommande}
-                    isCommandeEnCours={isCommandeEnCours}
-                />
-            )}
-        </div>
-    );
-}
-
-export default App;
+    @property
+    def sous_total(self):
+        """Calcule le sous-total pour cette ligne de commande."""
+        return self.quantite * self.prix_unitaire

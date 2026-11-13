@@ -24,6 +24,7 @@ from drf_spectacular.views import (
 
 from apps.products.api.views import ProduitViewSet
 from apps.orders.api.views import PanierViewSet, CommandeViewSet
+from apps.users.api.views import register_user
 
 # ==========================================
 # CRÉATION DU ROUTEUR PRINCIPAL
@@ -50,6 +51,8 @@ urlpatterns = [
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
+    
+    path('api/v1/register/', register_user, name='register'),
     
     # ==========================================
     # DOCUMENTATION DE L'API (SWAGGER / OPENAPI)

@@ -1,4 +1,4 @@
-function Header({ totalArticles, onOuvrirPanier }) {
+function Header({ totalArticles, onOuvrirPanier, onLogout}) {
     return (
         <header className="bg-black text-white p-4 shadow-md">
             <div className="container mx-auto flex justify-between items-center">
@@ -11,6 +11,9 @@ function Header({ totalArticles, onOuvrirPanier }) {
                         className="hover:text-yellow-500 font-bold bg-gray-800 px-4 py-2 rounded transition"
                     >
                         Panier ({totalArticles})
+                    </button>
+                    <button onClick={onLogout} className="text-red-400 hover:text-red-300 text-sm font-bold">
+                        Déconnexion
                     </button>
                 </nav>
             </div>

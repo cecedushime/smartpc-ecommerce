@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import Header from './components/header';
 import CarteProduit from './components/carteProduit'; 
 import PanneauPanier from './components/cartePanier';
+import Auth from './components/Auth';
 
 function App() {
     const [produits, setProduits] = useState([]); 
@@ -9,6 +10,7 @@ function App() {
     const [panier, setPanier] = useState([]);
     const [isPanierOpen, setIsPanierOpen] = useState(false);
     const [isCommandeEnCours, setIsCommandeEnCours] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('access_token'));
 
     useEffect(() => {
         fetch('http://127.0.0.1:8000/api/v1/produits/')
@@ -77,12 +79,21 @@ function App() {
     if (loading) {
         return <div className="text-center mt-20 text-2xl font-bold">Chargement des produits... ⏳</div>;
     }
+    // Si l'utilisateur n'est pas connecté, on affiche la page de Login
+    if (!isLoggedIn) {
+        return <Auth onLogin={() => setIsLoggedIn(true)} />;
+    }
 
     return (
         <div className="min-h-screen bg-gray-50">
             <Header 
                 totalArticles={totalArticles} 
-                onOuvrirPanier={() => setIsPanierOpen(true)} 
+                onOuvrirPanier={() => setIsPanierOpen(true)}
+                onLogout={() => {
+                    localStorage.removeItem('access_token');
+                    localStorage.removeItem('refresh_token');
+                    setIsLoggedIn(false);
+                }} 
             />
 
             <main className="container mx-auto p-8">
