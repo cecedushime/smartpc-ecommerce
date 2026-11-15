@@ -17,7 +17,7 @@ SECRET_KEY = 'django-insecure-7@j5&3!xg6*tp^4%8$2m9q0w1e3r5t7y9u0i1o2p3a4s5d6f7g
 DEBUG = True # Sera écrasé par production.py (False)
 
 ALLOWED_HOSTS = [
-    "smartpc-ecommerce-production.up.railway.app",
+    "smartpc-ecommerce-production.up.railway.app", 
     "localhost",
     "127.0.0.1",
 ]
