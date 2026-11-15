@@ -5,6 +5,7 @@ This file contains common settings used in all environments.
 
 import os
 from pathlib import Path
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -13,7 +14,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 SECRET_KEY = 'django-insecure-7@j5&3!xg6*tp^4%8$2m9q0w1e3r5t7y9u0i1o2p3a4s5d6f7g8h9'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = True # Sera écrasé par production.py (False)
 
 ALLOWED_HOSTS = [
     "smartpc-ecommerce-production.up.railway.app",
@@ -36,24 +37,24 @@ INSTALLED_APPS = [
     'django_filters',
     'drf_spectacular',
     'phonenumber_field',
+    'corsheaders',
     
     # Local apps
     'apps.users',
     'apps.products',
     'apps.orders',
     'apps.common',
-    'corsheaders'
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
+    'corsheaders.middleware.CorsMiddleware', 
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
@@ -75,9 +76,11 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'core.wsgi.application'
+
+WSGI_APPLICATION = 'config.wsgi.application'
 
 # Database
+# Sera écrasé par production.py (PostgreSQL)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -136,8 +139,6 @@ REST_FRAMEWORK = {
 }
 
 # JWT Settings
-from datetime import timedelta
-
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
@@ -145,12 +146,12 @@ SIMPLE_JWT = {
 
 # Spectacular (Swagger) settings
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'API Parfums',
-    'DESCRIPTION': 'API de gestion de parfums avec authentification JWT',
+    'TITLE': 'API SmartPC',
+    'DESCRIPTION': 'API de gestion de produits high-tech avec authentification JWT',
     'VERSION': '1.0.0',
 }
 
-# Autorise React (port 5173) à communiquer avec Django
+# Autorise React (Vercel et local) à communiquer avec Django
 CORS_ALLOWED_ORIGINS = [
     "https://smartpc-ecommerce-stpm.vercel.app",
     "http://localhost:5173",

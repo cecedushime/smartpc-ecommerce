@@ -9,6 +9,7 @@ Utilisé sur le serveur en ligne.
 
 import os
 from .base import *  # On importe TOUT ce qui est dans base.py
+import dj_database_url
 
 # ==========================================
 # 1. MODE DEBUG (DÉSACTIVÉ EN PRODUCTION)
@@ -38,15 +39,12 @@ if not SECRET_KEY:
 # ==========================================
 # PostgreSQL est plus robuste que SQLite pour la production.
 # Il supporte plusieurs connexions simultanées et est plus performant.
+# On lit automatiquement la variable DATABASE_URL fournie par Railway
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('DB_NAME'),
-        'USER': os.environ.get('DB_USER'),
-        'PASSWORD': os.environ.get('DB_PASSWORD'),
-        'HOST': os.environ.get('DB_HOST', 'localhost'),
-        'PORT': os.environ.get('DB_PORT', '5432'),
-    }
+    'default': dj_database_url.config(
+        conn_max_age=600, 
+        ssl_require=True
+    )
 }
 
 # ==========================================
