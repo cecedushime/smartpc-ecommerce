@@ -13,7 +13,7 @@ function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('access_token'));
 
     useEffect(() => {
-        fetch('http://127.0.0.1:8000/api/v1/produits/')
+        fetch(`${import.meta.env.VITE_API_URL}/api/v1/produits/`)
          .then(response => response.json())
          .then(data => {
             setProduits(data.results); 
@@ -48,7 +48,7 @@ function App() {
         };
 
         try {
-            const response = await fetch('http://127.0.0.1:8000/api/v1/commandes/', {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/commandes/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

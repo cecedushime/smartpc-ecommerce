@@ -36,10 +36,10 @@ function Auth({ onLogin }) {
         } else {
             // --- LOGIQUE D'INSCRIPTION (REGISTER) ---
             try {
-                const response = await fetch('http://127.0.0.1:8000/api/v1/register/', {
+                const response = await fetch(`${import.meta.env.VITE_API_URL}/api/token/`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, password, email })
+                    body: JSON.stringify({ username, password })
                 });
 
                 const data = await response.json();
