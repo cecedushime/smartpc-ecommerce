@@ -102,8 +102,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 # ==========================================
 # 11. LOGGING (Journalisation des erreurs)
 # ==========================================
-# Les erreurs sont écrites dans un fichier de log pour analyse ultérieure.
-# Cela permet de savoir ce qui a planté sans afficher les détails aux utilisateurs.
+# En production, on affiche les logs dans la console (Railway les capturera)
+# pour éviter les erreurs de fichiers manquants.
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -118,26 +118,15 @@ LOGGING = {
         },
     },
     'handlers': {
-        'file': {
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs', 'django.log'),
-            'formatter': 'verbose',
-            'level': 'ERROR',  # Seules les erreurs graves sont enregistrées
-        },
         'console': {
             'class': 'logging.StreamHandler',
             'formatter': 'simple',
-            'level': 'ERROR',
-        },
-        'mail_admins': {
-            'class': 'django.utils.log.AdminEmailHandler',
-            'level': 'CRITICAL',  # Envoie un email aux admins en cas d'erreur critique
-            'include_html': True,
+            'level': 'INFO',
         },
     },
     'root': {
-        'handlers': ['file', 'console', 'mail_admins'],
-        'level': 'ERROR',
+        'handlers': ['console'],
+        'level': 'INFO',
     },
 }
 
