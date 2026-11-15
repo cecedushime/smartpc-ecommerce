@@ -23,7 +23,7 @@ DEBUG = False
 # ==========================================
 # Exemple : "mondomaine.com,www.mondomaine.com"
 # On lit la variable d'environnement ALLOWED_HOSTS et on la découpe en liste.
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')
+#ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')
 
 # ==========================================
 # 3. CLÉ SECRÈTE (DOIT VENIR DU FICHIER .env)
@@ -52,7 +52,7 @@ DATABASES = {
 # ==========================================
 # En production, on spécifie EXACTEMENT les origines autorisées
 CORS_ALLOW_ALL_ORIGINS = False  # Désactivé en production
-CORS_ALLOWED_ORIGINS = os.environ.get('CORS_ALLOWED_ORIGINS', '').split(',')
+#CORS_ALLOWED_ORIGINS = os.environ.get('CORS_ALLOWED_ORIGINS', '').split(',')
 
 # ==========================================
 # 6. SÉCURITÉ HTTPS
