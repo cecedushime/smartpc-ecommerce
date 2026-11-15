@@ -15,7 +15,11 @@ SECRET_KEY = 'django-insecure-7@j5&3!xg6*tp^4%8$2m9q0w1e3r5t7y9u0i1o2p3a4s5d6f7g
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = [
+    "smartpc-ecommerce-production.up.railway.app",
+    "localhost",
+    "127.0.0.1",
+]
 
 # Application definition
 INSTALLED_APPS = [
@@ -148,8 +152,8 @@ SPECTACULAR_SETTINGS = {
 
 # Autorise React (port 5173) à communiquer avec Django
 CORS_ALLOWED_ORIGINS = [
+    "https://smartpc-ecommerce-stpm.vercel.app",
     "http://localhost:5173",
-    "http://127.0.0.1:5173",
 ]
 
 CORS_ALLOW_CREDENTIALS = True
