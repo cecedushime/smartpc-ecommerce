@@ -20,6 +20,7 @@ ALLOWED_HOSTS = ["*"]
 
 # Application definition
 INSTALLED_APPS = [
+    'jazzmin',   
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -158,3 +159,12 @@ CORS_ALLOW_CREDENTIALS = True
 CSRF_TRUSTED_ORIGINS = [
     "https://smartpc-ecommerce-production.up.railway.app",
 ]
+
+JAZZMIN_SETTINGS = {
+    "site_title": "SmartPC Admin",
+    "site_header": "SmartPC",
+    "site_brand": "SmartPC",
+    "welcome_sign": "Bienvenue sur le back-office de SmartPC",
+    "copyright": "SmartPC Ltd",
+    "show_ui_builder": True, 
+}
