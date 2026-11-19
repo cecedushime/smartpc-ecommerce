@@ -58,7 +58,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
 ROOT_URLCONF = 'config.urls'
 
@@ -171,5 +171,7 @@ JAZZMIN_SETTINGS = {
     "site_brand": "SmartPC",
     "welcome_sign": "Bienvenue sur le back-office de SmartPC",
     "copyright": "SmartPC Ltd",
-    "show_ui_builder": True, 
+    "show_ui_builder": False, 
+    "changeform_format": "horizontal_tabs",
+    "custom_css": "admin/custom.css",
 }

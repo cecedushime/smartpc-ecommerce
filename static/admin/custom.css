@@ -1,0 +1,16 @@
+/* Force les boutons de sauvegarde à passer en dessous du formulaire */
+.submit-row {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: flex-start !important;
+    flex-wrap: wrap !important;
+    gap: 10px !important;
+    width: 100% !important;
+    margin-top: 20px !important;
+}
+
+/* Enlève la position flottante qui cause le débordement */
+.submit-row input, .submit-row a {
+    position: static !important;
+    float: none !important;
+}
